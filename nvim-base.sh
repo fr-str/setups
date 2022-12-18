@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 # Check if user is root
 if [ "$EUID" -ne 0 ];then
     su="sudo"
@@ -16,76 +16,58 @@ elif [ -x "$(command -v pacman)" ]; then
     if [ -x "$(command -v yay)" ]; then
         pkmgr="yay -S"
         su=""
+        $su $pkmgr nvim-packer-git fg ripgrep
+    else
+        notyay=true
     fi
-    $su $pkmgr -S neovim
+
+    $su $pkmgr neovim 
 
     # check python-pip, install if not found
-    if [ -x "$(command -v python-pip)" ]; then
-        $su $pkmgr -S python-pip
+    if [ ! -x "$(command -v python-pip)" ]; then
+        $su $pkmgr python-pip
     fi
-       
+
 elif [ -x "$(command -v dnf)" ]; then
-    pkmgr="dnf -y"
-    $su $pkmgr install neovim
-elif [ -x "$(command -v yum)" ]; then
-    pkmgr="yum -y"
-    $su $pkmgr install neovim
+    pkmgr="dnf -y install"
+    $su $pkmgr neovim
+elif [ -x "$(command -v apt)" ]; then
+    pkmgr="apt -y install"
+    apt update
+    $su $pkmgr neovim
+elif [ -x "$(command -v apk)" ]; then
+    pkmgr="apk add"
+    $su $pkmgr nvim
 elif [ -x "$(command -v zypper)" ]; then
-    pkmgr="zypper"
-    $su pkmgr install neovim
+    echo "don't know the command for that"
+    exit 1
 elif [ -x "$(command -v brew)" ]; then
-    pkmgr="brew"
-    brew $pkmgr neovim
+    echo "don't know the command for that"
+    exit 1
 else
     echo "No package manager found"
     exit 1
 fi
 
-# Install vim-plug, if not found
-if [ ! -f ~/.local/share/nvim/site/autoload/plug.vim ]; then
-    # https://github.com/junegunn/vim-plug
-    curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
+# Check git
+[[ ! -x "$(command -v git)" ]] && $su $pkmgr git 
+
+git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+    ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
 # Check python3, install if not found
-if [ ! -x "$(command -v python3)" ]; then
-    $su $pkmgr python3
-else
-    echo "Python3 found"
-fi
-
+[[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
 python3 -m pip install --user --upgrade pynvim
 
-# Check cmake, install if not found
-if [ ! -x "$(command -v cmake)" ]; then
-    $su $pkmgr cmake
-else
-    echo "Cmake found"
-fi
-
 # Check nodejs, install if not found
-if [ ! -x "$(command -v nodejs)" ] && [ ! -x "$(command -v node)" ]; then
-    $su $pkmgr nodejs
-else
-    echo "Nodejs found"
-fi
-
-
+[[ ! -x "$(command -v nodejs)" ]] && $su $pkmgr nodejs
 # Check npm, install if not found
-if [ ! -x "$(command -v npm)" ]; then
-    $su $pkmgr npm
-else
-    echo "npm found"
-fi
+[[ ! -x "$(command -v npm)" ]] && $su $pkmgr npm
+# Check gcc
+[[ ! -x "$(command -v gcc)" ]] && $su $pkmgr gcc
 
-# Check jdk, install if not found
-if [ ! -x "$(command -v npm)" ]; then
-    $su $pkmgr jdk
-else
-    echo "jdk found"
-fi
+# Get config/nvim
+[[ ! -d $HOME/.config ]] && mkdir $HOME/.config
+curl -L dots.dodupy.dev/nvim.tar | tar xv --strip-components=3 -C $HOME/.config/
 
-# Get init.vim
-curl -fLo ~/.config/nvim/init.vim --create-dirs \
-    http://192.168.0.101:7777/init.vim
+[[ $notyay ]] && echo "yay not found, install 'fd', 'ripgrep' and clipboard provider manualy"
