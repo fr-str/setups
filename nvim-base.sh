@@ -14,30 +14,23 @@ elif [ -x "$(command -v pacman)" ]; then
     pkmgr="pacman -S"
     # if yay is installed, use it
     if [ -x "$(command -v yay)" ]; then
-        pkmgr="yay -S"
+        pkmgr="yay -S --noconfirm"
         su=""
-        $su $pkmgr nvim-packer-git fg ripgrep
+        $su $pkmgr nvim-packer-git fd ripgrep
     else
         notyay=true
     fi
 
-    $su $pkmgr neovim 
-
     # check python-pip, install if not found
-    if [ ! -x "$(command -v python-pip)" ]; then
-        $su $pkmgr python-pip
-    fi
+    [[ ! -x "$(command -v pip)" ]] && $su $pkmgr python-pip
 
 elif [ -x "$(command -v dnf)" ]; then
     pkmgr="dnf -y install"
-    $su $pkmgr neovim
 elif [ -x "$(command -v apt)" ]; then
     pkmgr="apt -y install"
     apt update
-    $su $pkmgr neovim
 elif [ -x "$(command -v apk)" ]; then
     pkmgr="apk add"
-    $su $pkmgr nvim
 elif [ -x "$(command -v zypper)" ]; then
     echo "don't know the command for that"
     exit 1
@@ -49,11 +42,12 @@ else
     exit 1
 fi
 
+# Check nvim
+[[ ! -x "$(command -v nvim)" ]] && $su $pkmgr neovim 
 # Check git
 [[ ! -x "$(command -v git)" ]] && $su $pkmgr git 
-
-git clone --depth 1 https://github.com/wbthomason/packer.nvim\
-    ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+# Clone packer
+[[ ! -e "$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim" ]] && git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
 # Check python3, install if not found
 [[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
@@ -66,8 +60,12 @@ python3 -m pip install --user --upgrade pynvim
 # Check gcc
 [[ ! -x "$(command -v gcc)" ]] && $su $pkmgr gcc
 
-# Get config/nvim
+# Get .config/nvim
 [[ ! -d $HOME/.config ]] && mkdir $HOME/.config
-curl -L dots.dodupy.dev/nvim.tar | tar xv --strip-components=3 -C $HOME/.config/
+# curl -L dots.dodupy.dev/nvim.tar | tar xv --strip-components=3 -C $HOME/.config/
+git clone github.com/fr-str/dots $HOME/.dots
+[[ -d $HOME/.config/nvim ]] && mv $HOME/.config/nvim $HOME/.config/nvim.bak
+ln -s $HOME/.dots/nvim/ $HOME/.config/nvim
 
+echo "Done"
 [[ $notyay ]] && echo "yay not found, install 'fd', 'ripgrep' and clipboard provider manualy"
