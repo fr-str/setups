@@ -8,8 +8,8 @@ fi
 pkmgr=""
 # Find package manager
 if [ -x "$(command -v apt)" ]; then
-    pkmgr="apt -y"
-    $su apt install neovim
+    pkmgr="apt install -y"
+    $su apt update
 elif [ -x "$(command -v pacman)" ]; then
     pkmgr="pacman -S"
     # if yay is installed, use it
@@ -27,8 +27,8 @@ elif [ -x "$(command -v pacman)" ]; then
 elif [ -x "$(command -v dnf)" ]; then
     pkmgr="dnf -y install"
 elif [ -x "$(command -v apt)" ]; then
-    pkmgr="apt -y install"
-    apt update
+    pkmgr="apt install -y"
+    $su apt update
 elif [ -x "$(command -v apk)" ]; then
     pkmgr="apk add"
 elif [ -x "$(command -v zypper)" ]; then
@@ -63,7 +63,7 @@ python3 -m pip install --user --upgrade pynvim
 # Get .config/nvim
 [[ ! -d $HOME/.config ]] && mkdir $HOME/.config
 # curl -L dots.dodupy.dev/nvim.tar | tar xv --strip-components=3 -C $HOME/.config/
-git clone github.com/fr-str/dots $HOME/.dots
+git clone https://github.com/fr-str/dots $HOME/.dots
 [[ -d $HOME/.config/nvim ]] && mv $HOME/.config/nvim $HOME/.config/nvim.bak
 ln -s $HOME/.dots/nvim/ $HOME/.config/nvim
 
