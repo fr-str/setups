@@ -29,8 +29,10 @@ elif [ -x /usr/bin/pacman ]; then
         makepkg -si --noconfirm
         cd $dir
         PM="yay -S --noconfirm"
+        sudo=""
     else 
         PM="yay -S --noconfirm"
+        sudo=""
     fi
     $PM ttf-jetbrains-mono
     $PM rsync
@@ -97,6 +99,12 @@ installSource alias-tips https://github.com/djui/alias-tips.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting
 # installSource linus-rants https://github.com/bhayward93/Linus-rants-ZSH.git
 installSource update-plugin https://github.com/AndrewHaluza/zsh-update-plugin.git
+
+
+#tmux stuff 
+$sudo $PM tmux
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+curl -L dots.dodupy.dev/dots/.tmux.conf -o $HOME/.tmux.conf
 
 
 echo -e "Done\n\n"

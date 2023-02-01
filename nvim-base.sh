@@ -62,8 +62,9 @@ python3 -m pip install --user --upgrade pynvim
 
 # Get .config/nvim
 [[ ! -d $HOME/.config ]] && mkdir $HOME/.config
-# curl -L dots.dodupy.dev/nvim.tar | tar xv --strip-components=3 -C $HOME/.config/
-git clone https://github.com/fr-str/dots $HOME/.dots
+
+[[ ! -d $HOME/.dots ]] && git clone https://github.com/fr-str/dots $HOME/.dots
+
 [[ -d $HOME/.config/nvim ]] && mv $HOME/.config/nvim $HOME/.config/nvim.bak
 ln -s $HOME/.dots/nvim/ $HOME/.config/nvim
 
