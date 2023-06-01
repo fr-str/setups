@@ -34,16 +34,16 @@ elif [ -x /usr/bin/pacman ]; then
         PM="yay -S --noconfirm"
         sudo=""
     fi
-    $PM ttf-jetbrains-mono
-    $PM rsync
-    $PM reflector
-    $PM noto-fonts-emoji
-    $PM bat
-    # $PM visual-studio-code-bin
-    $PM thefuck
-    $PM fd
-    $PM ripgrep
-    $PM ttf-terminus-nerd # lolcat cowsay 
+    #  visual-studio-code-bin \
+    $PM ttf-jetbrains-mono \
+     rsync \
+     reflector \
+     noto-fonts-emoji \
+     bat \
+     thefuck \
+     fd \
+     ripgrep \
+     ttf-terminus-nerd 
 else
     echo "Unable to find a package manager"
     exit 1
@@ -53,24 +53,37 @@ fi
 # install stuff that I want
 $sudo $PM git zsh docker docker-compose btop neovim
 
+[[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
+python3 -m pip install --user --upgrade pynvim
+python3 -m pip install --user --upgrade libtmux
+
 # install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
 
 cd $dir
-rm -f $HOME/.zshrc
-curl -L dots.dodupy.dev/dots/.zshrc -o $HOME/.zshrc
+mv $HOME/.zshrc $HOME/.zshrc.backup
+git clone https://github.com/fr-str/.dots $HOME/.dots
+ln -s $HOME/.dots/.zshrc $HOME/.zshrc
 # if not root copy .zsh to /root
 if [ "$(id -u)" != "0" ]; then
     [[ -d $HOME/.zsh ]] && cp -r $HOME/.zsh /root/.zsh
     $sudo rm -f /root/.zshrc
-    $sudo ln -s $dir/.zshrc /root/.zshrc
+    $sudo ln -s /$HOME/.dots/.zshrc /root/.zshrc
 fi
+
+#tmux stuff 
+$sudo $PM tmux
+ln -s $HOME/.dots/.tmux.conf $HOME/.tmux.conf
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # clone update-golang and insall go
 git clone https://github.com/udhos/update-golang $HOME/.update-golang
 cd $HOME/.update-golang
 $sudo ./update-golang.sh
 cd $dir
+
+#install lazygit 
+go install github.com/jesseduffield/lazygit@latest
 
 # install CompileDeamon from https://github.com/fr-str/CompileDaemon
 git clone https://github.com/fr-str/CompileDaemon $HOME/.CompileDaemon
@@ -79,6 +92,7 @@ export PATH=$PATH:/usr/local/go/bin
 go build
 mkdir -p $HOME/go/bin/
 cp CompileDaemon $HOME/go/bin/
+
 # PLUGIN_PATH="${ZSH_CUSTOM1:-$ZSH/custom}/plugins"
 PLUGIN_PATH="$HOME/.oh-my-zsh/custom/plugins"
 if [[ ! -d $PLUGIN_PATH ]]; then
@@ -97,15 +111,7 @@ function installSource(){
 installSource zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions
 installSource alias-tips https://github.com/djui/alias-tips.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting
-# installSource linus-rants https://github.com/bhayward93/Linus-rants-ZSH.git
 installSource update-plugin https://github.com/AndrewHaluza/zsh-update-plugin.git
-
-
-#tmux stuff 
-$sudo $PM tmux
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-curl -L dots.dodupy.dev/dots/.tmux.conf -o $HOME/.tmux.conf
-
 
 echo -e "Done\n\n"
 # if [ ! -e $iuse ];then 
