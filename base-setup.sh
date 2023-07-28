@@ -45,7 +45,9 @@ elif [ -x /usr/bin/pacman ]; then
      ripgrep \
      ttf-terminus-nerd \
      zsh-autosuggestions \
-     ttf-jetbrains-mono-nerd
+     ttf-jetbrains-mono-nerd \
+     python-pynvim \
+     python-libtmux
 else
     echo "Unable to find a package manager"
     exit 1
@@ -55,16 +57,16 @@ fi
 # install stuff that I want
 $sudo $PM git zsh docker docker-compose btop neovim
 
-[[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
-python3 -m pip install --user --upgrade pynvim
-python3 -m pip install --user --upgrade libtmux
+# [[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
+# python3 -m pip install --user --upgrade pynvim
+# python3 -m pip install --user --upgrade libtmux
 
 # install oh-my-zsh
-[[ -d $HOME/.oh-my-zsh ]] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+[[ ! -d $HOME/.oh-my-zsh ]] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
 
 cd $dir
 mv $HOME/.zshrc $HOME/.zshrc.backup
-git clone https://github.com/fr-str/.dots $HOME/.dots
+[[ ! -d $HOME/.dots ]] && git clone https://github.com/fr-str/.dots $HOME/.dots
 ln -s $HOME/.dots/.zshrc $HOME/.zshrc
 # if not root copy .zsh to /root
 # if [ "$(id -u)" != "0" ]; then
@@ -79,7 +81,7 @@ ln -s $HOME/.dots/.tmux.conf $HOME/.tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # clone update-golang and insall go
-[[ -d $HOME/.update-golang ]] &&  git clone https://github.com/udhos/update-golang $HOME/.update-golang
+[[ ! -d $HOME/.update-golang ]] &&  git clone https://github.com/udhos/update-golang $HOME/.update-golang
 cd $HOME/.update-golang
 $sudo ./update-golang.sh
 cd $dir
@@ -88,7 +90,7 @@ cd $dir
 go install github.com/jesseduffield/lazygit@latest
 
 # install CompileDeamon from https://github.com/fr-str/CompileDaemon
-[[ -d $HOME/.CompileDaemon ]] &&  git clone https://github.com/fr-str/CompileDaemon $HOME/.CompileDaemon
+[[ ! -d $HOME/.CompileDaemon ]] &&  git clone https://github.com/fr-str/CompileDaemon $HOME/.CompileDaemon
 cd $HOME/.CompileDaemon
 export PATH=$PATH:/usr/local/go/bin
 go build
@@ -114,7 +116,7 @@ installSource zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestio
 installSource alias-tips https://github.com/djui/alias-tips.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting
 installSource update-plugin https://github.com/AndrewHaluza/zsh-update-plugin.git
-isntallSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting 
+installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting 
 
 echo -e "Done\n\n"
 # if [ ! -e $iuse ];then 
