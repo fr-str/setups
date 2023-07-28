@@ -66,7 +66,7 @@ $sudo $PM git zsh docker docker-compose btop neovim
 
 cd $dir
 mv $HOME/.zshrc $HOME/.zshrc.backup
-[[ ! -d $HOME/.dots ]] && git clone https://github.com/fr-str/.dots $HOME/.dots
+[[ ! -d $HOME/.dots ]] && git clone https://github.com/fr-str/dots $HOME/.dots
 ln -s $HOME/.dots/.zshrc $HOME/.zshrc
 # if not root copy .zsh to /root
 # if [ "$(id -u)" != "0" ]; then
