@@ -16,7 +16,7 @@ elif [ -x "$(command -v pacman)" ]; then
     if [ -x "$(command -v yay)" ]; then
         pkmgr="yay -S --noconfirm"
         su=""
-        $su $pkmgr nvim-packer-git fd ripgrep
+        $su $pkmgr nvim-packer-git fd ripgrep python-pynvim
     else
         notyay=true
     fi
@@ -48,10 +48,6 @@ fi
 [[ ! -x "$(command -v git)" ]] && $su $pkmgr git 
 # Clone packer
 [[ ! -e "$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim" ]] && git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-
-# Check python3, install if not found
-[[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
-python3 -m pip install --user --upgrade pynvim
 
 # Check nodejs, install if not found
 [[ ! -x "$(command -v nodejs)" ]] && $su $pkmgr nodejs
