@@ -58,18 +58,18 @@ python3 -m pip install --user --upgrade pynvim
 python3 -m pip install --user --upgrade libtmux
 
 # install oh-my-zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+[[ -d $HOME/.oh-my-zsh ]] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
 
 cd $dir
 mv $HOME/.zshrc $HOME/.zshrc.backup
 git clone https://github.com/fr-str/.dots $HOME/.dots
 ln -s $HOME/.dots/.zshrc $HOME/.zshrc
 # if not root copy .zsh to /root
-if [ "$(id -u)" != "0" ]; then
-    [[ -d $HOME/.zsh ]] && cp -r $HOME/.zsh /root/.zsh
-    $sudo rm -f /root/.zshrc
-    $sudo ln -s /$HOME/.dots/.zshrc /root/.zshrc
-fi
+# if [ "$(id -u)" != "0" ]; then
+#     [[ -d $HOME/.zsh ]] && cp -r $HOME/.zsh /root/.zsh
+#     $sudo rm -f /root/.zshrc
+#     $sudo ln -s /$HOME/.dots/.zshrc /root/.zshrc
+# fi
 
 #tmux stuff 
 $sudo $PM tmux
@@ -77,7 +77,7 @@ ln -s $HOME/.dots/.tmux.conf $HOME/.tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # clone update-golang and insall go
-git clone https://github.com/udhos/update-golang $HOME/.update-golang
+[[ -d $HOME/.update-golang ]] &&  git clone https://github.com/udhos/update-golang $HOME/.update-golang
 cd $HOME/.update-golang
 $sudo ./update-golang.sh
 cd $dir
@@ -86,7 +86,7 @@ cd $dir
 go install github.com/jesseduffield/lazygit@latest
 
 # install CompileDeamon from https://github.com/fr-str/CompileDaemon
-git clone https://github.com/fr-str/CompileDaemon $HOME/.CompileDaemon
+[[ -d $HOME/.CompileDaemon ]] &&  git clone https://github.com/fr-str/CompileDaemon $HOME/.CompileDaemon
 cd $HOME/.CompileDaemon
 export PATH=$PATH:/usr/local/go/bin
 go build
