@@ -43,7 +43,9 @@ elif [ -x /usr/bin/pacman ]; then
      thefuck \
      fd \
      ripgrep \
-     ttf-terminus-nerd 
+     ttf-terminus-nerd \
+     zsh-autosuggestions \
+     ttf-jetbrains-mono-nerd
 else
     echo "Unable to find a package manager"
     exit 1
@@ -112,6 +114,7 @@ installSource zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestio
 installSource alias-tips https://github.com/djui/alias-tips.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting
 installSource update-plugin https://github.com/AndrewHaluza/zsh-update-plugin.git
+isntallSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting 
 
 echo -e "Done\n\n"
 # if [ ! -e $iuse ];then 
