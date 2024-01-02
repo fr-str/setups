@@ -55,7 +55,7 @@ fi
 
 
 # install stuff that I want
-$sudo $PM git zsh docker docker-compose btop neovim
+$sudo $PM git zsh docker docker-compose btop neovim fzf
 
 # [[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
 # python3 -m pip install --user --upgrade pynvim
@@ -79,6 +79,10 @@ ln -s $HOME/.dots/.zshrc $HOME/.zshrc
 $sudo $PM tmux
 ln -s $HOME/.dots/.tmux.conf $HOME/.tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+[[ ! -d $HOME/.local/bin ]] && mkdir -p $HOME/.local/bin
+[[ ! -e $HOME/.local/bin/tmux-sessionizer ]] && curl https://raw.githubusercontent.com/fr-str/dots/master/scripts/tmux-sessionizer -o $HOME/.local/bin/tmux-sessionizer
+[[ ! -x $HOME/.local/bin/tmux-sessionizer ]] && chmod +x $HOME/.local/bin/tmux-sessionizer
 
 # clone update-golang and insall go
 [[ ! -d $HOME/.update-golang ]] &&  git clone https://github.com/udhos/update-golang $HOME/.update-golang

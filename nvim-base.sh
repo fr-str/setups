@@ -16,7 +16,7 @@ elif [ -x "$(command -v pacman)" ]; then
     if [ -x "$(command -v yay)" ]; then
         pkmgr="yay -S --noconfirm"
         su=""
-        $su $pkmgr nvim-packer-git fd ripgrep python-pynvim
+        $su $pkmgr nvim-packer-git fd ripgrep python-pynvim 
     else
         notyay=true
     fi
@@ -64,5 +64,6 @@ fi
 [[ -d $HOME/.config/nvim ]] && mv $HOME/.config/nvim $HOME/.config/nvim.bak
 ln -s $HOME/.dots/nvim/ $HOME/.config/nvim
 
+
 echo "Done"
-[[ $notyay ]] && echo "yay not found, install 'fd', 'ripgrep' and clipboard provider manualy"
+[[ $notyay ]] && echo "yay not found, install 'fd', 'ripgrep'"
