@@ -121,6 +121,7 @@ installSource alias-tips https://github.com/djui/alias-tips.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting
 installSource update-plugin https://github.com/AndrewHaluza/zsh-update-plugin.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting 
+installSource cmdtime https://github.com/tom-auger/cmdtime
 
 echo -e "Done\n\n"
 # if [ ! -e $iuse ];then 
