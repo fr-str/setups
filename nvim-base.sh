@@ -16,7 +16,7 @@ elif [ -x "$(command -v pacman)" ]; then
     if [ -x "$(command -v yay)" ]; then
         pkmgr="yay -S --noconfirm"
         su=""
-        $su $pkmgr nvim-packer-git fd ripgrep python-pynvim 
+        $su $pkmgr fd ripgrep python-pynvim 
     else
         notyay=true
     fi
@@ -46,8 +46,6 @@ fi
 [[ ! -x "$(command -v nvim)" ]] && $su $pkmgr neovim 
 # Check git
 [[ ! -x "$(command -v git)" ]] && $su $pkmgr git 
-# Clone packer
-[[ ! -e "$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim" ]] && git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
 # Check nodejs, install if not found
 [[ ! -x "$(command -v nodejs)" ]] && $su $pkmgr nodejs
@@ -61,8 +59,8 @@ fi
 
 [[ ! -d $HOME/.dots ]] && git clone https://github.com/fr-str/dots $HOME/.dots
 
-[[ -d $HOME/.config/nvim ]] && mv $HOME/.config/nvim $HOME/.config/nvim.bak
-ln -s $HOME/.dots/nvim/ $HOME/.config/nvim
+[[ ! -d $HOME/.config/nvim ]] && ln -s $HOME/.dots/nvim/ $HOME/.config/nvim
+echo -e "0x1b[31mNvim config already exists0x1b[0m"
 
 
 echo "Done"
