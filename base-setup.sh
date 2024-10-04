@@ -4,7 +4,7 @@ set -ex
 dir=$(pwd)
 # check if root
 if [ "$(id -u)" != "0" ]; then
-    sudo="sudo"
+    su="sudo"
 fi
 # find system package manager
 if [ -x /usr/bin/apt-get ]; then
@@ -20,23 +20,24 @@ elif [ -x /usr/bin/pacman ]; then
     fi
 
     iuse="archBTW"
+    $su sed -i '1i\Server = http://192.168.0.109:9129/repo/archlinux/$repo/os/$arch' /etc/pacman.d/mirrorlist
+    $su sed -i 's/\(ParallelDownloads = \)5/\150/' /etc/pacman.conf
     # Arch Linux
     if [[ ! -x "$(command -v yay)" ]];then 
         cd /tmp
-        $sudo pacman -S --needed base-devel git --noconfirm
+        $su pacman -S --needed base-devel git --noconfirm
         git clone https://aur.archlinux.org/yay.git yay
         cd yay
         makepkg -si --noconfirm
         cd $dir
         PM="yay -S --noconfirm"
-        sudo=""
+        su=""
     else 
         PM="yay -S --noconfirm"
-        sudo=""
+        su=""
     fi
     #  visual-studio-code-bin \
-    $PM ttf-jetbrains-mono \
-     rsync \
+    $PM rsync \
      reflector \
      noto-fonts-emoji \
      bat \
@@ -48,6 +49,7 @@ elif [ -x /usr/bin/pacman ]; then
      ttf-jetbrains-mono-nerd \
      python-pynvim \
      python-libtmux
+
 else
     echo "Unable to find a package manager"
     exit 1
@@ -55,7 +57,7 @@ fi
 
 
 # install stuff that I want
-$sudo $PM git zsh docker docker-compose btop neovim fzf
+$su $PM git zsh docker docker-compose btop neovim fzf tldr
 
 # [[ ! -x "$(command -v python3)" ]] && $su $pkmgr python3
 # python3 -m pip install --user --upgrade pynvim
@@ -65,41 +67,39 @@ $sudo $PM git zsh docker docker-compose btop neovim fzf
 [[ ! -d $HOME/.oh-my-zsh ]] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
 
 cd $dir
-mv $HOME/.zshrc $HOME/.zshrc.backup
+[[ -e $HOME/.zshrc ]] && mv $HOME/.zshrc $HOME/.zshrc.backup
 [[ ! -d $HOME/.dots ]] && git clone https://github.com/fr-str/dots $HOME/.dots
 ln -s $HOME/.dots/.zshrc $HOME/.zshrc
 # if not root copy .zsh to /root
 # if [ "$(id -u)" != "0" ]; then
 #     [[ -d $HOME/.zsh ]] && cp -r $HOME/.zsh /root/.zsh
-#     $sudo rm -f /root/.zshrc
-#     $sudo ln -s /$HOME/.dots/.zshrc /root/.zshrc
+#     $su rm -f /root/.zshrc
+#     $su ln -s /$HOME/.dots/.zshrc /root/.zshrc
 # fi
 
 #tmux stuff 
-$sudo $PM tmux
-ln -s $HOME/.dots/.tmux.conf $HOME/.tmux.conf
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+$su $PM tmux
+[[ ! -e $HOME/.dots/.tmux.conf ]] && ln -s $HOME/.dots/.tmux.conf $HOME/.tmux.conf
+[[ ! -d $HOME/.tmux/plugins/tpm ]] && git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
 
 [[ ! -d $HOME/.local/bin ]] && mkdir -p $HOME/.local/bin
 [[ ! -e $HOME/.local/bin/tmux-sessionizer ]] && curl https://raw.githubusercontent.com/fr-str/dots/master/scripts/tmux-sessionizer -o $HOME/.local/bin/tmux-sessionizer
 [[ ! -x $HOME/.local/bin/tmux-sessionizer ]] && chmod +x $HOME/.local/bin/tmux-sessionizer
 
 # clone update-golang and insall go
-[[ ! -d $HOME/.update-golang ]] &&  git clone https://github.com/udhos/update-golang $HOME/.update-golang
-cd $HOME/.update-golang
-$sudo ./update-golang.sh
-cd $dir
+if [[ -z $iuse ]]; then
+    [[ ! -d $HOME/.update-golang ]] &&  git clone https://github.com/udhos/update-golang $HOME/.update-golang
+    cd $HOME/.update-golang
+    $su ./update-golang.sh
+    cd $dir
+fi
 
-#install lazygit 
+#install lazygit, lazysql
 go install github.com/jesseduffield/lazygit@latest
+go install github.com/jorgerojas26/lazysql@latest
 
 # install CompileDeamon from https://github.com/fr-str/CompileDaemon
-[[ ! -d $HOME/.CompileDaemon ]] &&  git clone https://github.com/fr-str/CompileDaemon $HOME/.CompileDaemon
-cd $HOME/.CompileDaemon
-export PATH=$PATH:/usr/local/go/bin
-go build
-mkdir -p $HOME/go/bin/
-cp CompileDaemon $HOME/go/bin/
+go install github.com/fr-str/CompileDaemon@latest
 
 # PLUGIN_PATH="${ZSH_CUSTOM1:-$ZSH/custom}/plugins"
 PLUGIN_PATH="$HOME/.oh-my-zsh/custom/plugins"
@@ -121,13 +121,14 @@ installSource alias-tips https://github.com/djui/alias-tips.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting
 installSource update-plugin https://github.com/AndrewHaluza/zsh-update-plugin.git
 installSource fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting 
-installSource cmdtime https://github.com/tom-auger/cmdtime
-
+#installSource cmdtime https://github.com/tom-auger/cmdtime
+wait
 echo -e "Done\n\n"
-# if [ ! -e $iuse ];then 
-#     echo "remember to install ttf-jetbrains-mono rsync k3d reflector noto-fonts-emoji ttf-joypixels bat autojump-rsvisual-studio-code-bin lolcat cowsay thefuck fd ripgrep"
-# fi
 
+read -p "Setup neovim too? [Y/n]: " choice
+choice=${choice:-y}
+[[ $choice == "y" ]] && ./nvim-base.sh
+"
 
 # to fix dark theme on arch in gnome
 # .config/gtk-x.0/settings.ini
